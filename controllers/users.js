@@ -33,7 +33,9 @@ module.exports.getUser = (req, res) => {
         });
         return;
       }
-      res.status(SERVER_ERROR_STATUS).send({ message: err.name });
+      res
+        .status(SERVER_ERROR_STATUS)
+        .send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -74,7 +76,7 @@ module.exports.updateUserInfo = (req, res) => {
       }
       res
         .status(NOT_FOUND_STATUS)
-        .send({ message: 'Запрашиваемый пользователь не найден' });
+        .send({ message: 'Пользователь с таким id не найден' });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -89,7 +91,7 @@ module.exports.updateUserInfo = (req, res) => {
           .send({ message: 'Передан некорректный id пользователя' });
         return;
       }
-      res.status(SERVER_ERROR_STATUS).send({ message: 'Ошибка сервера' });
+      res.status(SERVER_ERROR_STATUS).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -125,6 +127,6 @@ module.exports.updateUserAvatar = (req, res) => {
       }
       res
         .status(SERVER_ERROR_STATUS)
-        .send({ message: 'На сервере произошла ошибка сервера' });
+        .send({ message: 'На сервере произошла ошибка' });
     });
 };
