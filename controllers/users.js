@@ -15,6 +15,30 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 // get user info
+// module.exports.getUser = (req, res) => {
+//   User.findById(req.params.userId)
+//     .then((user) => {
+//       if (user) {
+//         res.send({ data: user });
+//         return;
+//       }
+//       res.status(NOT_FOUND_STATUS).send({
+//         message: 'Пользователь с таким id не найден',
+//       });
+//     })
+//     .catch((err) => {
+//       if (err.name === 'castError') {
+//         res.status(BAD_REQUEST_STATUS).send({
+//           message: 'Некорректный id пользователя',
+//         });
+//         return;
+//       }
+//       res
+//         .status(SERVER_ERROR_STATUS)
+//         .send({ message: 'На сервере произошла ошибка' });
+//     });
+// };
+
 module.exports.getUser = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
@@ -22,20 +46,16 @@ module.exports.getUser = (req, res) => {
         res.send({ data: user });
         return;
       }
-      res.status(NOT_FOUND_STATUS).send({
-        message: 'Пользователь с таким id не найден',
-      });
+      res.status(NOT_FOUND_STATUS).send({ message: 'Пользователь с таким id не найден' });
     })
     .catch((err) => {
-      if (err.name === 'castError') {
-        res.status(BAD_REQUEST_STATUS).send({
-          message: 'Некорректный id пользователя',
-        });
+      if (err.name === 'CastError') {
+        res
+          .status(BAD_REQUEST_STATUS)
+          .send({ message: 'Некорректный id пользователя' });
         return;
       }
-      res
-        .status(SERVER_ERROR_STATUS)
-        .send({ message: 'На сервере произошла ошибка' });
+      res.status(SERVER_ERROR_STATUS).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -91,7 +111,9 @@ module.exports.updateUserInfo = (req, res) => {
           .send({ message: 'Передан некорректный id пользователя' });
         return;
       }
-      res.status(SERVER_ERROR_STATUS).send({ message: 'На сервере произошла ошибка' });
+      res
+        .status(SERVER_ERROR_STATUS)
+        .send({ message: 'На сервере произошла ошибка' });
     });
 };
 
