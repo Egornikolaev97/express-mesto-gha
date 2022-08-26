@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
+const jwt = require('jsonwebtoken');
 const ConflictError = require('../utils/ConflictError');
 const Unauthorized = require('../utils/Unauthorized');
 const NotFoundError = require('../utils/NotFoundError');
@@ -63,48 +64,6 @@ module.exports.getUser = (req, res) => {
 //     });
 // };
 
-// module.exports.createUser = (req, res) => {
-//   const {
-//     name, about, avatar, email, password,
-//   } = req.body;
-//   User.findOne({ email }).then((userFinded) => {
-//     if (userFinded) {
-//       throw new ConflictError('Пользователь уже зарегестрирован');
-//     }
-//     bcrypt.hash(password, 10).then((hash) => {
-//       User.create({
-//         name,
-//         about,
-//         avatar,
-//         email,
-//         password: hash,
-//       })
-//         .then((user) => {
-//           res.send({
-//             data: {
-//               email: user.email,
-//               name: user.name,
-//               about: user.about,
-//               avatar: user.avatar,
-//               _id: user._id,
-//             },
-//           });
-//         })
-//         .catch((err) => {
-//           if (err.name === 'ValidationError') {
-//             res
-//               .status(BAD_REQUEST_STATUS)
-//               .send({ message: 'Переданы некорректные данные' });
-//             return;
-//           }
-//           res
-//             .status(SERVER_ERROR_STATUS)
-//             .send({ message: 'На сервере произошла ошибка' });
-//         });
-//     });
-//   });
-// };
-
 // module.exports.createUser = (req, res, next) => {
 //   const {
 //     email, password, name, about, avatar,
@@ -140,6 +99,7 @@ module.exports.getUser = (req, res) => {
 //     .catch(next);
 // };
 
+// create user
 module.exports.createUser = (req, res, next) => {
   const {
     email, password, name, about, avatar,
@@ -165,6 +125,22 @@ module.exports.createUser = (req, res, next) => {
       }
       next(err);
     });
+};
+
+// login
+module.exports.login = (req, res, next) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign(
+        { _id: user._id },
+        'some-secret-key',
+        { expiresIn: '7d' },
+      );
+      res.send({ jwt: token });
+    })
+    .catch(next);
 };
 
 // update user info
