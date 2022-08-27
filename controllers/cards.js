@@ -33,35 +33,11 @@ module.exports.addCard = (req, res, next) => {
 };
 
 // delete card
-
-// module.exports.deleteCard = (req, res, next) => {
-//   Card.findById(req.params.cardId).populate('owner').then((card) => {
-//     if (card) {
-//       if (card.owner._id.valueOf() === req.user._id) {
-//         Card.findByIdAndRemove(req.params.cardId)
-//           .then((cardRemoved) => {
-//             res.send({ data: cardRemoved });
-//           });
-//       } else {
-//         throw new ForbiddenError('Отказано в доступе');
-//       }
-//     } else {
-//       throw new NotFoundError('Запрашиваемая карточка не найдена');
-//     }
-//   }).catch((err) => {
-//     if (err.name === 'CastError') {
-//       throw new BadRequestError('Передан некорректный id карточки');
-//     }
-//     next(err);
-//   })
-//     .catch(next);
-// };
-
 module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Карточка не найдена');
+        throw new NotFoundError('Карточка с таким id не найдена');
       }
       if (req.user._id !== card.owner.toString()) {
         throw new ForbiddenError('Нельзя удалить чужую карточку!');

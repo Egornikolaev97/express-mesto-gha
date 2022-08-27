@@ -30,6 +30,7 @@ module.exports.getUser = (req, res, next) => {
     }).catch(next);
 };
 
+// get info about current user
 module.exports.getUserMe = (req, res, next) => {
   User.findById(req.user._id).then((user) => {
     if (!user) {
@@ -39,6 +40,7 @@ module.exports.getUserMe = (req, res, next) => {
   }).catch(next);
 };
 
+// create user controller
 module.exports.createUser = (req, res, next) => {
   const {
     email, password, name, about, avatar,
