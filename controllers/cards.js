@@ -33,26 +33,46 @@ module.exports.addCard = (req, res, next) => {
 };
 
 // delete card
+
+// module.exports.deleteCard = (req, res, next) => {
+//   Card.findById(req.params.cardId).populate('owner').then((card) => {
+//     if (card) {
+//       if (card.owner._id.valueOf() === req.user._id) {
+//         Card.findByIdAndRemove(req.params.cardId)
+//           .then((cardRemoved) => {
+//             res.send({ data: cardRemoved });
+//           });
+//       } else {
+//         throw new ForbiddenError('Отказано в доступе');
+//       }
+//     } else {
+//       throw new NotFoundError('Запрашиваемая карточка не найдена');
+//     }
+//   }).catch((err) => {
+//     if (err.name === 'CastError') {
+//       throw new BadRequestError('Передан некорректный id карточки');
+//     }
+//     next(err);
+//   })
+//     .catch(next);
+// };
+
 module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        next(new NotFoundError('Фотография не найдена'));
-        return;
+        throw new NotFoundError('Карточка не найдена');
       }
-      if (JSON.stringify(card.owner) !== JSON.stringify(req.user._id)) {
-        next(new ForbiddenError('Вы не можете удалить фотографию, созданную другим пользователем!'));
-      } else {
-        card.remove()
-          .then(() => res.send({ message: 'Фотография удалена' }))
-          .catch(next);
+      if (req.user._id !== card.owner.toString()) {
+        throw new ForbiddenError('Нельзя удалить чужую карточку!');
       }
+      return card.remove().then(res.send({ data: card }));
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new BadRequestError('Неверный запрос'));
+        next(new BadRequestError('Переданы некорректные данные'));
       }
-      return next(err);
+      next(err);
     });
 };
 
