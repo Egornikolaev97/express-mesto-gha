@@ -34,45 +34,40 @@ module.exports.addCard = (req, res, next) => {
 
 // delete card
 // module.exports.deleteCard = (req, res, next) => {
-//   Card.findById(req.params.cardId).then((card) => {
-//     if (card) {
-//       if (card.owner._id.valueOf() === req.user._id) {
-//         Card.findByIdAndRemove(req.params.cardId)
-//           .then((cardDeleted) => {
-//             res.send({ data: cardDeleted });
-//           });
-//       } else {
-//         throw new ForbiddenError('Вы не можете удалить чужую карточку');
+//   Card.findById(req.params.cardId)
+//     .orFail(() => {
+//       throw new NotFoundError('Карточки с таким id не найдена');
+//     })
+//     .then((card) => {
+//       if (!card.owner.equals(req.user._id)) {
+//         return next(new ForbiddenError('Нельзя удалить чужую карточку'));
 //       }
-//     } else {
-//       throw new NotFoundError('Карточка с таким id не найдена');
-//     }
-//   }).catch((err) => {
-//     if (err.name === 'CastError') {
-//       throw new BadRequestError('Передан некорректный id карточки');
-//     }
-//     next(err);
-//   })
+//       return card.remove()
+//         .then(() => res.status(200).send({ data: card, message: 'Карточка удалена' }));
+//     })
 //     .catch(next);
 // };
 
-module.exports.deleteCard = (req, res, next) => {
-  Card.findById(req.params.cardId)
-    .then((card) => {
-      if (!card) {
-        throw new NotFoundError('Карточка с такми id не найдена');
-      }
-      if (req.user._id !== card.owner.toString()) {
-        throw new ForbiddenError('Нельзя удалить чужую карточку');
-      }
-      card.remove().then(res.send({ data: card }));
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequestError('Передан некорректный id карточки'));
-      }
-      next(err);
+module.exports.deleteCard = async (req, res, next) => {
+  try {
+    const card = await Card.findById(req.params.id).orFail(() => {
+      throw new NotFoundError('Карточка не найдена');
     });
+
+    if (card.owner.toString() !== req.user._id) {
+      throw new ForbiddenError('Нельзя удалить чужую карточку');
+    } else {
+      await card.delete();
+    }
+    res.send(card);
+  } catch (err) {
+    if (err.name === 'CastError') {
+      next(new BadRequestError('Передан некорректный id карточки'));
+      return;
+    }
+
+    next(err);
+  }
 };
 
 // like card
