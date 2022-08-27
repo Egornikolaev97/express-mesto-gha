@@ -28,7 +28,8 @@ module.exports.addCard = (req, res, next) => {
         throw new BadRequestError('Переданы некорректные данные');
       }
       next(err);
-    }).catch(next);
+    })
+    .catch(next);
 };
 
 // delete card
@@ -57,14 +58,21 @@ module.exports.addCard = (req, res, next) => {
 
 module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
-    .orFail(() => new NotFoundError('Карточка не найдена.'))
     .then((card) => {
-      if (JSON.stringify(card.owner) !== JSON.stringify(req.user.payload)) {
-        return next(new ForbiddenError('Нельзя удалять чужие карточки.'));
+      if (!card) {
+        throw new NotFoundError('Карточка с такми id не найдена');
       }
-      return card.remove();
+      if (req.user._id !== card.owner.toString()) {
+        throw new ForbiddenError('Нельзя удалить чужую карточку');
+      }
+      card.remove().then(res.send({ data: card }));
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Передан некорректный id карточки'));
+      }
+      next(err);
+    });
 };
 
 // like card

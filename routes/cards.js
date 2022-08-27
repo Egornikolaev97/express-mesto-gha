@@ -24,15 +24,11 @@ router.post(
 );
 
 // router for deleting cards
-router.delete(
-  '/:cardId',
-  celebrate({
-    params: Joi.object().keys({
-      cardId: Joi.string().length(24).hex(),
-    }),
-  }),
-  deleteCard,
-);
+router.delete('/:cardId', celebrate({
+  params: {
+    cardId: Joi.string().alphanum().length(24).hex(),
+  },
+}), deleteCard);
 
 // router for liking cards
 router.put(
