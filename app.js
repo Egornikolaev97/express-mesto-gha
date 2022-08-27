@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { Joi, celebrate } = require('celebrate');
 const { errors } = require('celebrate');
-const { createUser, login } = require('./controllers/users');
+const { login, createUser } = require('./controllers/users');
 const { auth } = require('./midlewares/auth');
 const { handleError } = require('./midlewares/handleError');
 const NotFoundError = require('./utils/NotFoundError');
@@ -19,7 +19,7 @@ app.post(
   '/signin',
   celebrate({
     body: Joi.object().keys({
-      email: Joi.string().required().email(),
+      email: Joi.string().required(),
       password: Joi.string().required(),
     }),
   }),
