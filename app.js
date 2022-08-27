@@ -46,11 +46,12 @@ app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
 app.use(errors());
-app.use(handleError);
 
-app.use((req, res, next) => {
-  next(new NotFoundError('Страница не найдена'));
+app.use('*', () => {
+  throw new NotFoundError('Страница не найдена');
 });
+
+app.use(handleError);
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
