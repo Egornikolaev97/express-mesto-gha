@@ -1,6 +1,6 @@
 const { SERVER_ERROR_STATUS } = require('../utils/status');
 
-module.exports = (err, req, res, next) => {
+module.exports.handleError = (err, req, res, next) => {
   const { statusCode = SERVER_ERROR_STATUS, message } = err;
   res
     .status(statusCode)

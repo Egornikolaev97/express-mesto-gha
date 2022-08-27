@@ -1,10 +1,10 @@
 const { UNAUTHORIZED } = require('./status');
 
-class UnauthorizedError extends Error {
+class Unauthorized extends Error {
   constructor(message) {
     super(message);
     this.statusCode = UNAUTHORIZED;
   }
 }
 
-module.exports = UnauthorizedError;
+module.exports = { Unauthorized };

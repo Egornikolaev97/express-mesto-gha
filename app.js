@@ -5,6 +5,7 @@ const { Joi, celebrate } = require('celebrate');
 const { errors } = require('celebrate');
 const { createUser, login } = require('./controllers/users');
 const { auth } = require('./midlewares/auth');
+const { handleError } = require('./midlewares/handleError');
 const NotFoundError = require('./utils/NotFoundError');
 
 const { PORT = 3000 } = process.env;
@@ -45,6 +46,7 @@ app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
 app.use(errors());
+app.use(handleError);
 
 app.use((req, res, next) => {
   next(new NotFoundError('Страница не найдена'));

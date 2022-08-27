@@ -4,14 +4,12 @@ const {
   getUsers,
   getUser,
   getUserMe,
-  createUser,
   updateUserInfo,
   updateUserAvatar,
 } = require('../controllers/users');
 
 router.get('/', getUsers);
 router.get('/me', getUserMe);
-router.post('/', createUser);
 
 router.get(
   '/:userId',
