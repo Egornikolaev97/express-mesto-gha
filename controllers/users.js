@@ -24,10 +24,10 @@ module.exports.getUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Передан некорректный id пользователя');
+        next(new BadRequestError('Передан некорректный id пользователя'));
       }
       next(err);
-    }).catch(next);
+    });
 };
 
 // get info about current user
@@ -64,16 +64,14 @@ module.exports.createUser = (req, res, next) => {
         });
       }).catch((err) => {
         if (err.name === 'ValidationError') {
-          throw new BadRequestError('Переданы некорректные данные');
+          next(new BadRequestError('Переданы некорректные данные'));
         }
         if (err.code === 11000) {
-          throw new ConflictError('Пользователь уже зарегестрирован');
+          next(new ConflictError('Пользователь уже зарегестрирован'));
         }
         next(err);
-      })
-      .catch(next);
-  })
-    .catch(next);
+      });
+  });
 };
 
 // login
@@ -105,13 +103,13 @@ module.exports.updateUserInfo = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные');
+        next(new BadRequestError('Переданы некорректные данные'));
       }
       if (err.name === 'CastError') {
-        throw new BadRequestError('Передан некорректный id пользователя');
+        next(new BadRequestError('Передан некорректный id пользователя'));
       }
       next(err);
-    }).catch(next);
+    });
 };
 
 // update user avatar
@@ -131,11 +129,11 @@ module.exports.updateUserAvatar = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные');
+        next(new BadRequestError('Переданы некорректные данные'));
       }
       if (err.name === 'CastError') {
-        throw new BadRequestError('Передан некорректный id пользователя');
+        next(new BadRequestError('Передан некорректный id пользователя'));
       }
       next(err);
-    }).catch(next);
+    });
 };

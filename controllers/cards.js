@@ -25,11 +25,10 @@ module.exports.addCard = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные');
+        next(new BadRequestError('Переданы некорректные данные'));
       }
       next(err);
-    })
-    .catch(next);
+    });
 };
 
 // delete card
@@ -70,11 +69,10 @@ module.exports.likeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Передан некорректный id карточки');
+        next(new BadRequestError('Передан некорректный id карточки'));
       }
       next(err);
-    })
-    .catch(next);
+    });
 };
 
 // dislike card
@@ -95,9 +93,8 @@ module.exports.dislikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Передан некорректный id карточки');
+        next(new BadRequestError('Передан некорректный id карточки'));
       }
       next(err);
-    })
-    .catch(next);
+    });
 };
