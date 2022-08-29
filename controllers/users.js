@@ -45,34 +45,20 @@ module.exports.createUser = (req, res, next) => {
   const {
     email, password, name, about, avatar,
   } = req.body;
-  User.findOne({ email }).then((userFinded) => {
-    if (userFinded) {
-      throw new ConflictError('Пользователь уже зарегестрирован');
-    }
-    bcrypt.hash(password, 10).then((hash) => User.create({
-      name, about, avatar, email, password: hash,
-    }))
-      .then((user) => {
-        res.send({
-          data: {
-            email: user.email,
-            name: user.name,
-            about: user.about,
-            avatar: user.avatar,
-            _id: user._id,
-          },
-        });
-      }).catch((err) => {
-        if (err.name === 'ValidationError') {
-          next(new BadRequestError('Переданы некорректные данные'));
-        }
-        if (err.code === 11000) {
-          next(new ConflictError('Пользователь уже зарегестрирован'));
-        }
-        next(err);
-      });
-  })
-    .catch(next);
+  bcrypt.hash(password, 10).then((hash) => User.create({
+    name, about, avatar, email, password: hash,
+  }))
+    .then((user) => {
+      res.send(user);
+    }).catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError('Переданы некорректные данные'));
+      }
+      if (err.code === 11000) {
+        next(new ConflictError('Пользователь уже зарегестрирован'));
+      }
+      next(err);
+    });
 };
 
 // login
