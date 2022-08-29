@@ -40,38 +40,59 @@ module.exports.getUserMe = (req, res, next) => {
   }).catch(next);
 };
 
-// create user controller
+// create user
+// module.exports.createUser = (req, res, next) => {
+//   const {
+//     email, password, name, about, avatar,
+//   } = req.body;
+//   User.findOne({ email }).then((userFinded) => {
+//     if (userFinded) {
+//       throw new ConflictError('Пользователь уже зарегестрирован');
+//     }
+//     bcrypt.hash(password, 10)
+//       .then((hash) => {
+//         User.create({
+//           email, password: hash, name, about, avatar,
+//         })
+//           .then((user) => {
+//             res.send(user);
+//           })
+//           .catch((err) => {
+//             if (err.name === 'ValidationError') {
+//               next(new BadRequestError('Некорректно введены данные'));
+//             }
+//             if (err.code === 11000) {
+//               next(new ConflictError('Пользователь с таким email уже существует'));
+//             }
+//             next(err);
+//           });
+//       });
+//   }).catch(next);
+// };
+
 module.exports.createUser = (req, res, next) => {
   const {
-    email, password, name, about, avatar,
+    email, name, about, avatar,
   } = req.body;
-  User.findOne({ email }).then((userFinded) => {
-    if (userFinded) {
-      throw new ConflictError('Пользователь уже зарегестрирован');
-    }
-    bcrypt.hash(password, 10).then((hash) => User.create({
-      name, about, avatar, email, password: hash,
-    }))
-      .then((user) => {
-        res.send({
-          data: {
-            email: user.email,
-            name: user.name,
-            about: user.about,
-            avatar: user.avatar,
-            _id: user._id,
-          },
+
+  bcrypt.hash(req.body.password, 10)
+    .then((hash) => {
+      User.create({
+        email, password: hash, name, about, avatar,
+      })
+        .then((user) => res
+          .send(user))
+        .catch((err) => {
+          if (err.code === 11000) {
+            next(new ConflictError('Пользователь с таким email уже существует'));
+            return;
+          }
+          if (err.name === 'ValidationError') {
+            next(new BadRequestError(`Переданы некорректные данные при создании пользователя: ${err}`));
+          }
+          next(err);
         });
-      }).catch((err) => {
-        if (err.name === 'ValidationError') {
-          next(new BadRequestError('Переданы некорректные данные'));
-        }
-        if (err.code === 11000) {
-          next(new ConflictError('Пользователь уже зарегестрирован'));
-        }
-        next(err);
-      });
-  });
+    });
 };
 
 // login
