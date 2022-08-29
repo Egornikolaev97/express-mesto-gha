@@ -70,8 +70,7 @@ module.exports.createUser = (req, res, next) => {
           throw new ConflictError('Пользователь уже зарегестрирован');
         }
         next(err);
-      })
-      .catch(next);
+      });
   })
     .catch(next);
 };
