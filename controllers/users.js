@@ -41,58 +41,33 @@ module.exports.getUserMe = (req, res, next) => {
 };
 
 // create user
-// module.exports.createUser = (req, res, next) => {
-//   const {
-//     email, password, name, about, avatar,
-//   } = req.body;
-//   User.findOne({ email }).then((userFinded) => {
-//     if (userFinded) {
-//       throw new ConflictError('Пользователь уже зарегестрирован');
-//     }
-//     bcrypt.hash(password, 10)
-//       .then((hash) => {
-//         User.create({
-//           email, password: hash, name, about, avatar,
-//         })
-//           .then((user) => {
-//             res.send(user);
-//           })
-//           .catch((err) => {
-//             if (err.name === 'ValidationError') {
-//               next(new BadRequestError('Некорректно введены данные'));
-//             }
-//             if (err.code === 11000) {
-//               next(new ConflictError('Пользователь с таким email уже существует'));
-//             }
-//             next(err);
-//           });
-//       });
-//   }).catch(next);
-// };
-
 module.exports.createUser = (req, res, next) => {
   const {
-    email, name, about, avatar,
+    email, password, name, about, avatar,
   } = req.body;
-
-  bcrypt.hash(req.body.password, 10)
-    .then((hash) => {
-      User.create({
-        email, password: hash, name, about, avatar,
-      })
-        .then((user) => res
-          .send(user))
-        .catch((err) => {
-          if (err.code === 11000) {
-            next(new ConflictError('Пользователь с таким email уже существует'));
-            return;
-          }
-          if (err.name === 'ValidationError') {
-            next(new BadRequestError(`Переданы некорректные данные при создании пользователя: ${err}`));
-          }
-          next(err);
-        });
-    });
+  User.findOne({ email }).then((userFinded) => {
+    if (userFinded) {
+      throw new ConflictError('Пользователь уже зарегестрирован');
+    }
+    bcrypt.hash(password, 10)
+      .then((hash) => {
+        User.create({
+          email, password: hash, name, about, avatar,
+        })
+          .then((user) => {
+            res.send(user);
+          })
+          .catch((err) => {
+            if (err.name === 'ValidationError') {
+              next(new BadRequestError('Некорректно введены данные'));
+            }
+            if (err.code === 11000) {
+              next(new ConflictError('Пользователь с таким email уже существует'));
+            }
+            next(err);
+          });
+      });
+  }).catch(next);
 };
 
 // login
