@@ -49,6 +49,7 @@ app.use('*', () => {
 });
 
 app.use(handleError);
+
 app.use(errors());
 
 app.listen(PORT, () => {
