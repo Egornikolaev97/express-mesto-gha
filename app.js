@@ -1,8 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const { Joi, celebrate } = require('celebrate');
-const { errors } = require('celebrate');
+const { Joi, celebrate, errors } = require('celebrate');
 const { login, createUser } = require('./controllers/users');
 const { auth } = require('./midlewares/auth');
 const handleError = require('./midlewares/handleError');
@@ -45,12 +44,11 @@ app.use(auth);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
-app.use(errors());
-
 app.use('*', () => {
   throw new NotFoundError('Страница не найдена');
 });
 
+app.use(errors());
 app.use(handleError);
 
 app.listen(PORT, () => {

@@ -64,10 +64,10 @@ module.exports.createUser = (req, res, next) => {
         });
       }).catch((err) => {
         if (err.name === 'ValidationError') {
-          throw new BadRequestError('Переданы некорректные данные');
+          next(new BadRequestError('Переданы некорректные данные'));
         }
         if (err.code === 11000) {
-          throw new ConflictError('Пользователь уже зарегестрирован');
+          next(new ConflictError('Пользователь уже зарегестрирован'));
         }
         next(err);
       });

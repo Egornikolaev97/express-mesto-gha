@@ -1,7 +1,7 @@
 /* eslint-disable func-names */
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const { isEmail, isURL } = require('validator');
+const { isEmail } = require('validator');
 const Unauthorized = require('../utils/Unauthorized');
 
 const userSchema = new mongoose.Schema(
@@ -25,7 +25,9 @@ const userSchema = new mongoose.Schema(
       required: true,
       default:
         'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
-      validate: isURL,
+      validate: {
+        validator: (avatar) => /^(https?:\/\/)?([\w-]{1,32}\.[\w-]{1,32})[^\s@]*/gm.test(avatar),
+      },
     },
     email: {
       type: String,
