@@ -8,7 +8,7 @@ const BadRequestError = require('../utils/BadRequestError');
 // get all users
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.send({ data: users }))
+    .then((users) => res.send(users))
     .catch(next);
 };
 
@@ -17,7 +17,7 @@ module.exports.getUser = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (user) {
-        res.send({ data: user });
+        res.send(user);
       } else {
         throw new NotFoundError('Пользователь не найден');
       }
@@ -37,7 +37,7 @@ module.exports.getUserMe = (req, res, next) => {
     if (!user) {
       throw new NotFoundError('Пользователь не найден');
     }
-    res.send({ data: user });
+    res.send(user);
   }).catch(next);
 };
 
@@ -94,7 +94,7 @@ module.exports.updateUserInfo = (req, res, next) => {
   )
     .then((user) => {
       if (user) {
-        res.send({ data: user });
+        res.send(user);
         return;
       }
       throw new NotFoundError('Пользователь не найден');
@@ -122,7 +122,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
   )
     .then((user) => {
       if (user) {
-        res.send({ data: user });
+        res.send(user);
         return;
       }
       throw new NotFoundError('Запрашиваемый пользователь не найден');
